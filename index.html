@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Datepicker for "Yes" or "No"</title>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 0;
+    }
+
+    #container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 24px;
+      color: #333;
+      margin-top: 0;
+    }
+
+    p {
+      font-size: 16px;
+      color: #666;
+    }
+
+    #datepicker {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+
+    #result {
+      font-size: 18px;
+      color: #333;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <h1>Datepicker for "Yes" or "No"</h1>
+    <p>Select a date:</p>
+    <input type="text" id="datepicker">
+    <p id="result"></p>
+  </div>
+
+  <script>
+    function isDateInPattern(inputDateString) {
+      const noDates = ["2024-01-03", "2023-01-04", "2023-01-05"];
+  
+      if (noDates.includes(inputDateString)) {
+        return "No";
+      }
+  
+      const startDate = new Date("2023-11-13").toUTCString();
+      const inputDate = new Date(inputDateString).toUTCString();
+      const timeDifference = new Date(inputDate) - new Date(startDate);
+      const daysDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+      const pattern = [
+        "Y", "Y", "N", "N", "N", "Y", "Y",
+        "N", "N", "N", "Y", "Y", "N", "N",
+        "Y", "Y", "Y", "N", "N", "Y", "Y",
+        "N", "N", "Y", "Y", "Y", "N", "N"
+      ];
+      const patternIndex = (daysDifference % 28 + 28) % 28;
+  
+      const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      const dayOfWeek = daysOfWeek[new Date(inputDate).getUTCDay()];
+  
+      if (pattern[patternIndex] === "Y") {
+        if (dayOfWeek === "Saturday" || dayOfWeek === "Sunday") {
+          return "Yes (10am - 6pm)";
+        } else {
+          return "Yes (3pm - midnight)";
+        }
+      } else {
+        return "No";
+      }
+    }
+
+    $(document).ready(function () {
+      $("#datepicker").datepicker({
+        dateFormat: "yy-mm-dd",
+        onSelect: function (dateText) {
+          const result = isDateInPattern(dateText);
+          $("#result").text(`Result for ${dateText}: ${result}`);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
